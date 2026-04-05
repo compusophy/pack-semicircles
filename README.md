@@ -1,20 +1,41 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# Pack Semicircles Optimizer
 
-# Run and deploy your AI Studio app
+A high-performance, mathematically rigorous optimization engine designed to solve the complex geometric challenge of packing 15 unit semicircles into the smallest possible enclosing circle.
 
-This contains everything you need to run your app locally.
+## Overview
 
-View your app in AI Studio: https://ai.studio/apps/48a4fc10-6881-450b-844d-46b22cc67826
+Finding the optimal packing of irregular shapes is a notoriously difficult problem in computational geometry. This application tackles the 15-semicircle packing problem using a sophisticated **Parallel Tempering Markov Chain Monte Carlo (MCMC)** algorithm, distributed across a swarm of Web Workers.
 
-## Run Locally
+## Features
 
-**Prerequisites:**  Node.js
+* **Interactive Canvas:** Manually drag and rotate semicircles to explore configurations or provide starting seeds for the optimizer.
+* **Worker Swarm Architecture:** Utilizes 16 parallel Web Workers to explore the configuration space simultaneously without blocking the main UI thread.
+  * **12 Explorers:** Use Simulated Annealing and Basin Hopping (Iterated Local Search) to escape local minima and find novel dense structures.
+  * **4 Greedy Polishers:** Perform microscopic steps on the global best configuration to squeeze out the final fractions of the enclosing radius.
+* **Live Visualization:** Watch the global best solution evolve in real-time alongside a 4x4 grid showing the live state of all 16 workers.
+* **Export & Import:** Save your best configurations to JSON and load them later to resume optimization.
 
+## The Mathematics
 
-1. Install dependencies:
-   `npm install`
-2. Set the `GEMINI_API_KEY` in [.env.local](.env.local) to your Gemini API key
-3. Run the app:
-   `npm run dev`
+The optimization engine abandons simple heuristics in favor of a rigorous thermodynamic approach:
+* **State Space:** A 45-dimensional continuous configuration space (x, y, theta for 15 semicircles).
+* **Proposal Distribution:** Pure Gaussian Random Walk (Brownian motion) using the Box-Muller transform.
+* **Adaptive Step Size:** Dynamically targets an acceptance rate of exactly 0.234, the proven optimal rate for random walk Metropolis algorithms in high-dimensional spaces.
+* **Strict Constraints:** Overlapping states are strictly rejected during the annealing phase. If forced into an overlap (e.g., via manual drag), the engine switches to a discrete overlap-resolution phase.
+
+## Development
+
+This project is built with React, TypeScript, Vite, and Tailwind CSS.
+
+### Setup
+
+```bash
+# Install dependencies
+npm install
+
+# Start the development server
+npm run dev
+
+# Build for production
+npm run build
+```

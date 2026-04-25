@@ -1,7 +1,7 @@
 export interface Point { x: number; y: number; }
 export interface Semicircle { x: number; y: number; theta: number; }
 
-const EPSILON = 1e-9;
+const EPSILON = 5e-6;
 
 function distSq(a: Point, b: Point): number {
     return (a.x - b.x) ** 2 + (a.y - b.y) ** 2;
@@ -78,9 +78,9 @@ export function semicirclesOverlap(s1: Semicircle, s2: Semicircle): boolean {
     const dir2 = { x: Math.cos(s2.theta), y: Math.sin(s2.theta) };
 
     // 1. Check if identical or nearly identical centers
-    if (dSq < 1e-6) {
+    if (dSq < EPSILON) {
         // If they don't form a perfect full circle (facing opposite directions), they overlap
-        if (dot(dir1, dir2) > -1 + 1e-6) {
+        if (dot(dir1, dir2) > -1 + EPSILON) {
             return true;
         }
     }
@@ -107,8 +107,8 @@ export function semicirclesOverlap(s1: Semicircle, s2: Semicircle): boolean {
         const cp2 = ccw(a, b, d);
         const cp3 = ccw(c, d, a);
         const cp4 = ccw(c, d, b);
-        return ((cp1 > 1e-6 && cp2 < -1e-6) || (cp1 < -1e-6 && cp2 > 1e-6)) &&
-               ((cp3 > 1e-6 && cp4 < -1e-6) || (cp3 < -1e-6 && cp4 > 1e-6));
+        return ((cp1 > EPSILON && cp2 < -EPSILON) || (cp1 < -EPSILON && cp2 > EPSILON)) &&
+               ((cp3 > EPSILON && cp4 < -EPSILON) || (cp3 < -EPSILON && cp4 > EPSILON));
     };
 
     if (strictSegmentsIntersect(f1[0], f1[1], f2[0], f2[1])) return true;
@@ -117,9 +117,9 @@ export function semicirclesOverlap(s1: Semicircle, s2: Semicircle): boolean {
     const pts1 = segmentCircleIntersect(f1[0], f1[1], s2, 1);
     for (const p of pts1) {
         // Is intersection strictly inside the flat edge segment?
-        if (distSq(p, s1) < 1 - 1e-6) {
+        if (distSq(p, s1) < 1 - EPSILON) {
             // Is intersection strictly inside the arc's half-plane?
-            if (dot({ x: p.x - s2.x, y: p.y - s2.y }, dir2) > 1e-6) {
+            if (dot({ x: p.x - s2.x, y: p.y - s2.y }, dir2) > EPSILON) {
                 return true;
             }
         }
@@ -128,8 +128,8 @@ export function semicirclesOverlap(s1: Semicircle, s2: Semicircle): boolean {
     // 4. Flat edge 2 crosses Arc 1
     const pts2 = segmentCircleIntersect(f2[0], f2[1], s1, 1);
     for (const p of pts2) {
-        if (distSq(p, s2) < 1 - 1e-6) {
-            if (dot({ x: p.x - s1.x, y: p.y - s1.y }, dir1) > 1e-6) {
+        if (distSq(p, s2) < 1 - EPSILON) {
+            if (dot({ x: p.x - s1.x, y: p.y - s1.y }, dir1) > EPSILON) {
                 return true;
             }
         }
@@ -138,8 +138,8 @@ export function semicirclesOverlap(s1: Semicircle, s2: Semicircle): boolean {
     // 5. Arc 1 crosses Arc 2
     const arcPts = circlesIntersect(s1, 1, s2, 1);
     for (const p of arcPts) {
-        if (dot({ x: p.x - s1.x, y: p.y - s1.y }, dir1) > 1e-6 &&
-            dot({ x: p.x - s2.x, y: p.y - s2.y }, dir2) > 1e-6) {
+        if (dot({ x: p.x - s1.x, y: p.y - s1.y }, dir1) > EPSILON &&
+            dot({ x: p.x - s2.x, y: p.y - s2.y }, dir2) > EPSILON) {
             return true;
         }
     }

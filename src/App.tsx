@@ -416,9 +416,9 @@ export default function App() {
   }, [semicircles]);
 
   return (
-    <div className="h-screen w-screen overflow-hidden bg-gray-50 flex font-sans text-gray-900">
+    <div className="min-h-screen lg:h-screen w-full overflow-x-hidden lg:overflow-hidden bg-gray-50 flex flex-col lg:flex-row font-sans text-gray-900">
       {/* Sidebar */}
-      <div className="w-80 bg-white border-r border-gray-200 p-5 flex flex-col shadow-sm z-10 overflow-y-auto shrink-0">
+      <div className="order-2 lg:order-1 w-full lg:w-80 bg-white border-t lg:border-t-0 lg:border-r border-gray-200 p-5 flex flex-col shadow-sm z-10 lg:overflow-y-auto shrink-0">
         <div className="mb-6">
           <h1 className="text-2xl font-bold text-gray-900 tracking-tight">Pack Semicircles</h1>
           <p className="text-sm text-gray-500 mt-1">Challenge Optimizer</p>
@@ -535,14 +535,14 @@ export default function App() {
       </div>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-row overflow-hidden">
+      <div className="order-1 lg:order-2 flex-1 flex flex-col lg:flex-row lg:overflow-hidden w-full">
         {/* Main View */}
-        <div className="w-[450px] relative overflow-hidden bg-white flex flex-col border-r border-gray-200 shrink-0">
+        <div className="w-full lg:w-[450px] relative lg:overflow-hidden bg-white flex flex-col border-b lg:border-b-0 lg:border-r border-gray-200 shrink-0">
           <div className="p-4 border-b border-gray-200 bg-gray-50 shrink-0">
             <h2 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Current Best</h2>
             <p className="text-xs text-gray-500 mt-1">Global minimum radius: {enclosingCircle.r === Infinity ? '---' : enclosingCircle.r.toFixed(6)}</p>
           </div>
-          <div className="flex-1 relative flex items-center justify-center p-4">
+          <div className="aspect-square lg:aspect-auto lg:flex-1 relative flex items-center justify-center p-4">
             {/* Grid Background */}
             <div className="absolute inset-0 pointer-events-none opacity-[0.03]" 
                  style={{ backgroundImage: 'radial-gradient(circle at 2px 2px, black 1px, transparent 0)', backgroundSize: '40px 40px' }}>
@@ -602,20 +602,23 @@ export default function App() {
       </div>
 
       {/* Right Area - Worker Visualization */}
-      <div className="flex-1 bg-gray-50 flex flex-col shadow-sm z-10 overflow-hidden">
+      <div className="flex-1 bg-gray-50 flex flex-col shadow-sm z-10 lg:overflow-hidden w-full">
         <div className="p-4 border-b border-gray-200 bg-white shrink-0">
           <h2 className="text-sm font-bold text-gray-800 uppercase tracking-wider">Worker Swarm (4x4 Grid)</h2>
           <p className="text-xs text-gray-500 mt-1">Live configuration states - 4 Polishers, 12 Explorers</p>
         </div>
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="grid grid-cols-4 gap-4 h-full auto-rows-fr">
+        <div className="flex-1 lg:overflow-y-auto p-4 lg:p-6">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 lg:gap-4 h-full lg:auto-rows-fr">
             {Object.values(workerStats).sort((a, b) => a.id - b.id).map(stat => (
               <div key={stat.id} className="bg-white border border-gray-200 rounded-xl p-3 flex flex-col items-center shadow-sm hover:shadow-md transition-shadow">
-                <div className="text-xs text-gray-500 w-full flex justify-between font-mono mb-2">
-                  <span className="font-bold flex items-center">
-                    <span className={`w-2 h-2 rounded-full mr-1.5 ${stat.type === 'greedy' ? 'bg-amber-400' : 'bg-indigo-400'}`}></span>
+                <div className="text-[10px] text-gray-500 w-full flex flex-col justify-center items-center font-mono mb-1 text-center whitespace-nowrap overflow-hidden">
+                  <span className="font-bold flex items-center mb-0.5">
+                    <span className={`w-2 h-2 rounded-full mr-1 ${stat.type === 'greedy' ? 'bg-amber-400' : stat.type.includes('POLISH') ? 'bg-purple-400' : 'bg-indigo-400'}`}></span>
                     W{stat.id}
                   </span>
+                  <span className="opacity-75 uppercase tracking-tighter truncate w-full" title={stat.type}>{stat.type}</span>
+                </div>
+                <div className="text-xs text-gray-500 w-full flex justify-center font-mono mb-2">
                   <span className={stat.bestScore < enclosingCircle.r ? "text-green-600 font-bold" : ""}>
                     {stat.bestScore === Infinity ? (stat.currentScore === Infinity ? '---' : stat.currentScore.toFixed(3)) : stat.bestScore.toFixed(3)}
                   </span>
